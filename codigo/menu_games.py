@@ -1,112 +1,145 @@
-import random
+import random  # Importa a biblioteca random para gerar números aleatórios
+import time    # Importa a biblioteca time para usar pausas temporais (como o sleep)
 
+# Função do jogo da adivinhação
 def jogo_adivinhação():
-
-    número_secreto = random.randint(1, 100) # Vai escolher um número entre 1 e 100
-    tentativas = 0 # Aqui vai ficar armazenado quantas tentativas o teve até acerta
+    número_secreto = random.randint(1, 100)  # Gera um número aleatório entre 1 e 100
+    tentativas = 0  # Inicializa o contador de tentativas
 
     print('Bem-vindo ao jogo de adivinhação!')
     print('Tente adivinhar o número que estou pensando, entre 1 e 100.')
 
-    while True:
-        palpite = input('Digite seu palpite: ') # O usuário vai digitar o seu palpite
-        if not palpite.isdigit(): # Vai verificar se o que foi digitado é um número inteiro positivo
+    while True:  # Loop até o jogador acertar
+        palpite = input('Digite seu palpite: ')  # Recebe o palpite do jogador
+        if not palpite.isdigit():  # Verifica se o palpite é um número
             print('Digite um número válido.')
-            continue # Volta para o começo do loop
+            continue  # Volta para o início do loop
 
-        palpite = int(palpite) # Converte o texto para número inteiro
-        tentativas += 1 # Soma 1 às tentativas feitas
+        palpite = int(palpite)  # Converte o palpite para inteiro
+        tentativas += 1  # Incrementa o número de tentativas
 
-        if palpite == número_secreto:
+        if palpite == número_secreto:  # Verifica se o palpite está correto
             print(f'PARABÉNS! Você acertou após {tentativas} tentativas.')
-            break # Sai do loop e o jogo acaba
+            break  # Encerra o jogo se acertar
         elif palpite < número_secreto:
-            print('O número é maior.') # Dá uma dica que o número secreto é maior
-        elif palpite > número_secreto:
-            print('O número é menor.') # Dá uma dica que o número secreto é menor
+            print('O número é maior.')  # Dica: o número secreto é maior
+        else:
+            print('O número é menor.')  # Dica: o número secreto é menor
 
-def jogo_da_velha():
-    # Cria o tabuleiro 3x3 com espaços vazios
-    tabuleiro = [[" " for _ in range(3)] for _ in range(3)]
+# Função principal do jogo da velha, com opção contra a máquina
+def jogo_da_velha(contra_maquina=False):
+    tabuleiro = [[" " for _ in range(3)] for _ in range(3)]  # Cria um tabuleiro 3x3 vazio
 
-    # Função para exibir o tabuleiro no terminal
+    # Função para exibir o tabuleiro formatado
     def mostrar_tabuleiro(tabuleiro):
-        print("   0   1   2")  # Cabeçalho com os números das colunas
-        for i in range(3):  # Para cada linha do tabuleiro
-            # Mostra o número da linha e as casas separadas por |
-            linha = f"{i}  {tabuleiro[i][0]} | {tabuleiro[i][1]} | {tabuleiro[i][2]}"
-            print(linha)
-            if i < 2:  # Para as duas primeiras linhas, adiciona a linha separadora
-                print("  ---+---+---")
+        print("   0   1   2")  # Cabeçalho das colunas
+        for i in range(3):
+            # Exibe cada linha com separadores verticais
+            print(f"{i}  {tabuleiro[i][0]} | {tabuleiro[i][1]} | {tabuleiro[i][2]}")
+            if i < 2:
+                print("  ---+---+---")  # Linhas divisórias
 
-    # Função que verifica se um jogador venceu
-    def verificar_vitoria(tabuleiro, jogador):
-        # Verifica se há alguma linha com 3 símbolos do jogador
-        for linha in tabuleiro:
-            if all(casa == jogador for casa in linha):
+    # Função para verificar se um jogador venceu
+    def verificar_vitoria(tab, jogador):
+        # Verifica todas as linhas
+        for linha in tab:
+            if all(c == jogador for c in linha):
                 return True
-        # Verifica colunas
+        # Verifica todas as colunas
         for col in range(3):
-            if all(tabuleiro[linha][col] == jogador for linha in range(3)):
+            if all(tab[linha][col] == jogador for linha in range(3)):
                 return True
-        # Verifica a diagonal principal (de cima à esquerda até baixo à direita)
-        if all(tabuleiro[i][i] == jogador for i in range(3)):
+        # Verifica diagonal principal
+        if all(tab[i][i] == jogador for i in range(3)):
             return True
-        # Verifica a diagonal secundária (de cima à direita até baixo à esquerda)
-        if all(tabuleiro[i][2 - i] == jogador for i in range(3)):
+        # Verifica diagonal secundária
+        if all(tab[i][2 - i] == jogador for i in range(3)):
             return True
-        return False  # Se não encontrou nenhuma vitória
+        return False  # Se não houver vitória
 
-    # Função que verifica se o jogo empatou (tabuleiro cheio e sem vitória)
-    def verificar_empate(tabuleiro):
-        for linha in tabuleiro:
-            if " " in linha:  # Se ainda tem espaço vazio, não é empate
-                return False
-        return True  # Tabuleiro cheio e sem vencedor
+    # Função para verificar se houve empate
+    def verificar_empate(tab):
+        # Retorna True se todas as casas estiverem preenchidas
+        return all(c != " " for linha in tab for c in linha)
 
-    jogador = 'X'  # Começa com o jogador 'X'
+    jogador = 'X'  # O jogador 'X' sempre começa
 
     while True:  # Loop principal do jogo
-        mostrar_tabuleiro(tabuleiro)  # Mostra o tabuleiro
-        print(f"\nVez do jogador {jogador}")  # Mostra de quem é a vez
+        mostrar_tabuleiro(tabuleiro)  # Mostra o estado atual do tabuleiro
+        print(f"\nVez do jogador {jogador}")  # Indica de quem é a vez
 
-        try:
-            # Solicita ao jogador a linha e a coluna onde deseja jogar
-            linha = int(input('Digite a linha (0, 1 ou 2): '))
-            coluna = int(input('Digite a coluna (0, 1 ou 2): '))
-        except ValueError:
-            # Se o jogador digitar algo que não seja número
-            print("Por favor, digite apenas números válidos.")
-            continue  # Volta ao início do loop
-
-        # Verifica se a posição digitada está dentro do tabuleiro
-        if linha not in [0, 1, 2] or coluna not in [0, 1, 2]:
-            print("Posição fora do tabuleiro. Tente novamente.")
-            continue  # Volta ao início do loop
-
-        # Verifica se a casa está vazia
-        if tabuleiro[linha][coluna] == " ":
-            # Marca a jogada no tabuleiro
-            tabuleiro[linha][coluna] = jogador
-
-            # Verifica se o jogador venceu
-            if verificar_vitoria(tabuleiro, jogador):
-                mostrar_tabuleiro(tabuleiro)  # Mostra o tabuleiro final
-                print(f"\n🎉 Jogador {jogador} venceu!")
-                break  # Encerra o jogo
-
-            # Verifica se deu empate
-            if verificar_empate(tabuleiro):
-                mostrar_tabuleiro(tabuleiro)  # Mostra o tabuleiro final
-                print("\n🤝 Empate!")
-                break  # Encerra o jogo
-
-            # Troca de jogador: se era X, vira O; se era O, vira X
-            jogador = 'O' if jogador == 'X' else 'X'
+        if contra_maquina and jogador == 'O':  # Se for a vez da máquina
+            print("O computador está pensando...")  # Mensagem de espera
+            time.sleep(1)  # Aguarda 1 segundo
+            # Cria uma lista com todas as jogadas possíveis (casas vazias)
+            jogadas_disponiveis = [(i, j) for i in range(3) for j in range(3) if tabuleiro[i][j] == " "]
+            linha, coluna = random.choice(jogadas_disponiveis)  # Escolhe uma posição aleatória
+            print(f"A máquina jogou na posição {linha}, {coluna}")  # Informa a jogada da máquina
         else:
-            # A posição já está ocupada
-            print("Essa posição já está ocupada! Tente novamente.")
-            continue  # Volta ao início do loop
+            try:
+                linha = int(input("Digite a linha (0, 1 ou 2): "))  # Recebe a linha do jogador
+                coluna = int(input("Digite a coluna (0, 1 ou 2): "))  # Recebe a coluna do jogador
+            except ValueError:
+                print("Por favor, digite apenas números válidos.")  # Caso o jogador digite letras
+                continue
 
-# Chama a função para iniciar o jogo
-jogo_da_velha()
+            if linha not in [0, 1, 2] or coluna not in [0, 1, 2]:
+                print("Posição inválida. Tente novamente.")  # Fora dos limites do tabuleiro
+                continue
+
+            if tabuleiro[linha][coluna] != " ":
+                print("Essa posição já está ocupada!")  # Se a casa já estiver marcada
+                continue
+
+        tabuleiro[linha][coluna] = jogador  # Marca a jogada no tabuleiro
+
+        if verificar_vitoria(tabuleiro, jogador):  # Verifica se o jogador venceu
+            mostrar_tabuleiro(tabuleiro)  # Mostra o tabuleiro final
+            if contra_maquina and jogador == 'O':
+                print("\n🤖 A máquina venceu!")  # Vitória da máquina
+            else:
+                print(f"\n🎉 Jogador {jogador} venceu!")  # Vitória do jogador humano
+            break
+
+        if verificar_empate(tabuleiro):  # Verifica se todas as casas estão preenchidas
+            mostrar_tabuleiro(tabuleiro)
+            print("\n🤝 Empate!")  # Mensagem de empate
+            break
+
+        jogador = 'O' if jogador == 'X' else 'X'  # Alterna entre os jogadores
+
+# Submenu para escolher o modo do jogo da velha
+def menu_jogo_da_velha():
+    print('\n== JOGO DA VELHA ==')  # Título do submenu
+    print('1 - Modo 2 jogadores')  # Opção para jogar entre 2 pessoas
+    print('2 - Modo contra a máquina')  # Opção para jogar contra o computador
+    escolha = input('Escolha um modo: ')  # Recebe a escolha do jogador
+
+    if escolha == '1':
+        jogo_da_velha(contra_maquina=False)  # Chama o modo 2 jogadores
+    elif escolha == '2':
+        jogo_da_velha(contra_maquina=True)  # Chama o modo contra a máquina
+    else:
+        print('Opção inválida. Voltando ao menu principal.')  # Caso escolha inválida
+
+# Menu principal do programa
+def menu():
+    while True:
+        print("\n=== MENU PRINCIPAL ===")  # Exibe o menu principal
+        print("1 - Jogo da Adivinhação")  # Primeira opção
+        print("2 - Jogo da Velha")  # Segunda opção
+        print("3 - Sair")  # Terceira opção
+        escolha = input("Escolha uma opção (1, 2 ou 3): ")  # Entrada da escolha
+
+        if escolha == '1':
+            jogo_adivinhação()  # Inicia o jogo de adivinhação
+        elif escolha == '2':
+            menu_jogo_da_velha()  # Vai para o menu do jogo da velha
+        elif escolha == '3':
+            print('👋 Saindo do programa. Até logo!')  # Mensagem de saída
+            break  # Encerra o loop e o programa
+        else:
+            print('Opção inválida. Tente novamente.')  # Caso digite algo errado
+
+# Chama o menu principal para iniciar o programa
+menu()
