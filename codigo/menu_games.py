@@ -69,8 +69,8 @@ def jogo_da_velha(contra_maquina=False):
         print(f"\nVez do jogador {jogador}")  # Indica de quem é a vez
 
         if contra_maquina and jogador == 'O':  # Se for a vez da máquina
-            print("O computador está pensando...")  # Mensagem de espera
-            time.sleep(1)  # Aguarda 1 segundo
+            print("O computador está pensando...\n")  # Mensagem de espera
+            time.sleep(1.5)  # Aguarda 1.5 segundos
             # Cria uma lista com todas as jogadas possíveis (casas vazias)
             jogadas_disponiveis = [(i, j) for i in range(3) for j in range(3) if tabuleiro[i][j] == " "]
             linha, coluna = random.choice(jogadas_disponiveis)  # Escolhe uma posição aleatória
@@ -122,20 +122,34 @@ def menu_jogo_da_velha():
     else:
         print('Opção inválida. Voltando ao menu principal.')  # Caso escolha inválida
 
+# Intruções dos jogos
+def ver_instrucoes():
+    print("\n=== Instruções ===")
+    print("Jogo da Velha:") # Instrução do jogo da velha
+    print("- O tabuleiro é 3x3.")
+    print("- Dois jogadores alternam jogadas ou jogam contra a máquina.")
+    print("- Ganha quem alinhar 3 símbolos (X ou O).")
+    print("\nJogo da Adivinhação:") # Instrução do jogo Adivinhação
+    print("- Adivinhe um número entre 1 e 100.")
+    print("- O jogo dá dicas se o número é maior ou menor.")
+
 # Menu principal do programa
 def menu():
     while True:
         print("\n=== MENU PRINCIPAL ===")  # Exibe o menu principal
         print("1 - Jogo da Adivinhação")  # Primeira opção
         print("2 - Jogo da Velha")  # Segunda opção
-        print("3 - Sair")  # Terceira opção
-        escolha = input("Escolha uma opção (1, 2 ou 3): ")  # Entrada da escolha
+        print("3 - Ver intruções")  # Terceira opção
+        print("4 - Sair")  # Quarta opção
+        escolha = input("Escolha uma opção (1, 2, 3 ou 4): ")  # Entrada da escolha
 
         if escolha == '1':
             jogo_adivinhação()  # Inicia o jogo de adivinhação
         elif escolha == '2':
             menu_jogo_da_velha()  # Vai para o menu do jogo da velha
         elif escolha == '3':
+            ver_instrucoes() # Vai para as instruções dos jogos
+        elif escolha == '4':
             print('👋 Saindo do programa. Até logo!')  # Mensagem de saída
             break  # Encerra o loop e o programa
         else:
